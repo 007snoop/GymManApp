@@ -52,7 +52,7 @@ public class UserDAO {
                 return new User(
                         rs.getInt("user_id"),
                         rs.getString("username"),
-                        rs.getString("password"),
+                        rs.getString("password"), // remove for prod
                         rs.getString("email"),
                         rs.getString("phone_number"),
                         rs.getString("address"),
