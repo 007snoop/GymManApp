@@ -1,24 +1,21 @@
 package com.gym.model;
 
-public class User {
+public abstract class User {
     private int userId;
     private String username;
     private String password;
     private String email;
     private String phoneNumber;
     private String address;
-    private String role;
 
     // constructor
-    public User(int userId, String username, String password, String email, String phoneNumber, String address,
-                String role) {
+    public User(int userId, String username, String password, String email, String phoneNumber, String address) {
         this.userId = userId;
         this.username = username;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
-        this.role = role;
     }
 
     // getter and setter
@@ -47,7 +44,6 @@ public class User {
         return phoneNumber;
     }
 
-    public String getRole() {
-        return role;
-    }
+    public abstract String getRole();
 }
+

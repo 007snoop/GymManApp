@@ -1,5 +1,8 @@
 package com.gym.dao;
 
+import com.gym.model.Admin;
+import com.gym.model.Member;
+import com.gym.model.Trainer;
 import com.gym.model.User;
 
 import java.sql.Connection;
@@ -49,15 +52,20 @@ public class UserDAO {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new User(
-                        rs.getInt("user_id"),
-                        rs.getString("username"),
-                        rs.getString("password"), // remove for prod
-                        rs.getString("email"),
-                        rs.getString("phone_number"),
-                        rs.getString("address"),
-                        rs.getString("role")
-                );
+                        String role = rs.getString("role").toLowerCase();
+                        int userId = rs.getInt("user_id");
+                        String uname = rs.getString("uname");
+                        String password = rs.getString("password");
+                        String email = rs.getString("email");
+                        String phoneNumber = rs.getString("phone_number");
+                        String address = rs.getString("address");
+
+                        return switch (role) {
+                            case "admin" -> new Admin(userId, uname, password, email, phoneNumber, address);
+                            case "trainer" -> new Trainer(userId, uname, password, email, password, address);
+                            case "member" -> new Member(userId, uname, password, email, phoneNumber, address);
+                            default -> throw new IllegalArgumentException();
+                        };
             }
         }
         return null;

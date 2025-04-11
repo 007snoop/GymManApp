@@ -16,8 +16,6 @@ public class UserService {
     // make user with hashed pass
     public void register(User user) throws SQLException {
         String hashedPass = hashPassword(user.getPassword());
-        user = new User(user.getUserId(), user.getUsername(), hashedPass, user.getEmail(), user.getPhoneNumber(),
-                user.getAddress(), user.getRole());
         userDAO.registerUser(user);
     }
 

@@ -1,5 +1,6 @@
 package com.gym;
 
+import com.gym.util.ConsoleUI;
 import com.gym.util.DBSetup;
 import com.gym.util.DBUtil;
 
@@ -15,6 +16,8 @@ public class Main {
                 System.out.println("PSQL CONNECTION ERROR");
             }
             DBSetup.initDB(connection);
+            ConsoleUI consoleUI = new ConsoleUI(connection);
+            consoleUI.start();
         } catch (Exception e) {
             e.printStackTrace();
         }
