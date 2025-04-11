@@ -54,7 +54,7 @@ public class UserDAO {
             if (rs.next()) {
                         String role = rs.getString("role").toLowerCase();
                         int userId = rs.getInt("user_id");
-                        String uname = rs.getString("uname");
+                        String uname = rs.getString("username");
                         String password = rs.getString("password");
                         String email = rs.getString("email");
                         String phoneNumber = rs.getString("phone_number");

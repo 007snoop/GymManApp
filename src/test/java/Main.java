@@ -1,5 +1,3 @@
-package com.gym;
-
 import com.gym.util.ConsoleUI;
 import com.gym.util.DBSetup;
 import com.gym.util.DBUtil;

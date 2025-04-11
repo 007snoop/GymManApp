@@ -44,6 +44,30 @@ public abstract class User {
         return phoneNumber;
     }
 
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public abstract String getRole();
 }
 
