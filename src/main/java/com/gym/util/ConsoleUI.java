@@ -10,9 +10,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ConsoleUI {
-    private Scanner scanner;
+    private final Scanner scanner;
     private final UserService userService;
-    private MembershipService membershipService;
+    private final MembershipService membershipService;
 
     public ConsoleUI(UserService userService, MembershipService membershipService) {
         this.userService = userService;

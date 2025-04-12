@@ -40,7 +40,7 @@ public class MembershipDAO {
 
         String SQL = """
                 SELECT *
-                FROM 
+                FROM
                 memberships""";
 
         try (PreparedStatement stmt = connection.prepareStatement(SQL);

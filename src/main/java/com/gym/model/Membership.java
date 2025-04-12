@@ -1,11 +1,11 @@
 package com.gym.model;
 
 public class Membership {
-    private int membershipId;
-    private String membershipType;
-    private String membershipDesc;
-    private double membershipCost;
-    private int memberId; // fk to user_id in users table
+    private final int membershipId;
+    private final String membershipType;
+    private final String membershipDesc;
+    private final double membershipCost;
+    private final int memberId; // fk to user_id in users table
 
     public Membership(int membershipId, String membershipType, String membershipDesc, double membershipCost,
                       int memberId) {

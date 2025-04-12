@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDAO {
-    private Connection connection;
+    private final Connection connection;
 
     public UserDAO(Connection connection) {
         this.connection = connection;

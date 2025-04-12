@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class MembershipService {
-    private MembershipDAO membershipDAO;
+    private final MembershipDAO membershipDAO;
 
     public MembershipService(MembershipDAO membershipDAO) {
         this.membershipDAO = membershipDAO;
