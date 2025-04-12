@@ -64,11 +64,12 @@ public class WorkoutClassDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                WorkoutClass wc = new WorkoutClass();
-                wc.setWorkoutClassId(rs.getInt("workout_class_id"));
-                wc.setWorkoutClassType(rs.getString("workout_class_type"));
-                wc.setWorkoutClassDesc(rs.getString("workout_class_desc"));
-                wc.setTrainerId(rs.getInt("trainer_id"));
+                WorkoutClass wc = new WorkoutClass(
+                        rs.getInt("workout_class_id"),
+                        rs.getString("workout_class_type"),
+                        rs.getString("workout_class_desc"),
+                        rs.getInt("trainer_id")
+                );
                 classes.add(wc);
             }
         }
