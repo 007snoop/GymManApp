@@ -14,11 +14,19 @@ public class WorkoutClassService {
         this.workoutClassDAO = new WorkoutClassDAO(connection);
     }
 
-    public void addWorkoutclass(WorkoutClass workoutClass) throws SQLException {
+    public void addWorkoutClass(WorkoutClass workoutClass) throws SQLException {
         workoutClassDAO.addWorkoutClass(workoutClass);
     }
 
     public List<WorkoutClass> getAllWorkoutClasses() throws SQLException {
         return workoutClassDAO.getAllWorkoutClasses();
+    }
+
+    public List<WorkoutClass> getWorkoutClassesByTrainerId(int trainerId) throws SQLException {
+        return workoutClassDAO.getWorkoutClassesByTrainerId(trainerId);
+    }
+
+    public void deleteWorkoutClass(int workoutClassId) throws SQLException {
+        workoutClassDAO.deleteWorkoutClass(workoutClassId);
     }
 }

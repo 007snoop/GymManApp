@@ -2,6 +2,7 @@ package com.gym.dao;
 
 import com.gym.model.WorkoutClass;
 
+import java.security.PublicKey;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,4 +51,41 @@ public class WorkoutClassDAO {
         }
         return classes;
     }
+
+    public List<WorkoutClass> getWorkoutClassesByTrainerId(int trainerId) throws SQLException {
+        List<WorkoutClass> classes = new ArrayList<>();
+        String SQL = """
+                SELECT *
+                FROM workout_classes
+                WHERE trainer_id = ?""";
+
+        try (PreparedStatement stmt = connection.prepareStatement(SQL)) {
+            stmt.setInt(1, trainerId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                WorkoutClass wc = new WorkoutClass();
+                wc.setWorkoutClassId(rs.getInt("workout_class_id"));
+                wc.setWorkoutClassType(rs.getString("workout_class_type"));
+                wc.setWorkoutClassDesc(rs.getString("workout_class_desc"));
+                wc.setTrainerId(rs.getInt("trainer_id"));
+                classes.add(wc);
+            }
+        }
+
+        return classes;
+    }
+
+    public void deleteWorkoutClass(int workoutClassId) throws SQLException {
+        String SQL = """
+                DELETE FROM
+                workout_classes WHERE
+                workout_class_id = ?""";
+
+        try (PreparedStatement stmt = connection.prepareStatement(SQL)) {
+            stmt.setInt(1, workoutClassId);
+            stmt.executeUpdate();
+        }
+    }
+
 }
