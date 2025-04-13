@@ -1,8 +1,6 @@
 package com.gym.dao;
 
 import com.gym.model.WorkoutClass;
-
-import java.security.PublicKey;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
