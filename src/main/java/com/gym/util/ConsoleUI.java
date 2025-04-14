@@ -5,7 +5,6 @@ import com.gym.model.*;
 import com.gym.service.MembershipService;
 import com.gym.service.UserService;
 import com.gym.service.WorkoutClassService;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
