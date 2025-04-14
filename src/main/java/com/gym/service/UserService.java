@@ -47,5 +47,9 @@ public class UserService {
         return userDAO.getAllUsers();
     }
 
+    public boolean deleteUser(String username) throws SQLException {
+        return userDAO.deleteUser(username);
+    }
+
 
 }

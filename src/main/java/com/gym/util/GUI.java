@@ -196,7 +196,37 @@ public class GUI extends Application {
 
         deleteUserButton.setOnAction(event -> {
             // TODO: Prompt to enter username for deletion
+            TextInputDialog dialog = new TextInputDialog();
+
+            dialog.setTitle("Delete User");
+            dialog.setHeaderText("Delete a User");
+            dialog.setContentText("Enter username to delete:");
+
+            dialog.showAndWait().ifPresent(username -> {
+                try {
+                    boolean deleted = userService.deleteUser(username);
+                    Alert alert;
+                    if (deleted) {
+                        alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("User Deleted");
+                        alert.setHeaderText(null);
+                        alert.setContentText("User: '" + username + "' deleted successfully.");
+                    } else {
+                        alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("Deletion failed");
+                        alert.setHeaderText(null);
+                        alert.setContentText("User '" + username + "'not found or could not be deleted.");
+                    }
+
+                    alert.showAndWait();
+                } catch (SQLException e) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Error: " + e.getMessage());
+                    alert.showAndWait();
+                }
+            });
         });
+
+
         logoutButton.setOnAction(event -> start(stage));
 
         VBox layout = new VBox(10, welcomeLabel, viewUsersButton, viewClassesButton, deleteUserButton, logoutButton);

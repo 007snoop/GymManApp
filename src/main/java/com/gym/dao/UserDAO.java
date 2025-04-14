@@ -76,7 +76,7 @@ public class UserDAO {
 
 
     }
-
+    // get all users for admin
     public List<User> getAllUsers() throws SQLException {
         List<User> users = new ArrayList<>();
 
@@ -103,5 +103,25 @@ public class UserDAO {
             }
         }
         return users;
+    }
+
+    // delete user with admin
+
+    public boolean deleteUser(String username) throws SQLException {
+        String SQL = """
+                DELETE FROM
+                users
+                WHERE
+                username = ?
+                """;
+
+        int affectedRow = 0;
+        try (PreparedStatement stmt = connection.prepareStatement(SQL)) {
+            stmt.setString(1, username);
+            affectedRow = stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return affectedRow > 0;
     }
 }
