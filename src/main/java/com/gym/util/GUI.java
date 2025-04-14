@@ -1,5 +1,8 @@
 package com.gym.util;
 
+import com.gym.model.Admin;
+import com.gym.model.Member;
+import com.gym.model.Trainer;
 import com.gym.model.User;
 import com.gym.service.MembershipService;
 import com.gym.service.UserService;
@@ -8,12 +11,10 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -68,7 +69,7 @@ public class GUI extends Application {
         primaryStage.show();
 
         loginButton.setOnAction(event -> showLoginScreen(primaryStage));
-        registerButton.setOnAction(event -> showRegisterScreen());
+        registerButton.setOnAction(event -> showRegisterScreen(primaryStage));
     }
 
 
@@ -280,8 +281,75 @@ public class GUI extends Application {
         stage.setScene(new Scene(layout, 400, 300));
     }
 
-    private void showRegisterScreen() {
-        System.out.println("Register triggered");
+    private void showRegisterScreen(Stage primaryStage) {
+        Label titleLabel = new Label("Register New User");
+
+        TextField usernameField = new TextField();
+        usernameField.setPromptText("Username");
+
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Password");
+
+        TextField emailField = new TextField();
+        emailField.setPromptText("Email");
+
+        TextField phoneField = new TextField();
+        phoneField.setPromptText("Phone Number");
+
+        TextField addressField = new TextField();
+        addressField.setPromptText("Address");
+
+        ComboBox<String> roleBox = new ComboBox<>();
+        roleBox.getItems().addAll("Admin", "Trainer", "Member");
+        roleBox.setPromptText("Select Role");
+
+        Label messageLabel = new Label();
+
+        Button registerButton = new Button("Register");
+        Button backButton = new Button("Back");
+
+        registerButton.setOnAction(event -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+            String email = emailField.getText();
+            String phone = phoneField.getText();
+            String address = addressField.getText();
+            String role = roleBox.getValue();
+
+            if (username.isEmpty() || password.isEmpty() || email.isEmpty() || phone.isEmpty() || address.isEmpty() || role == null) {
+                messageLabel.setText("All fields are required.");
+                return;
+            }
+
+            User newUser = null;
+            switch (role.toLowerCase()) {
+                case "admin" ->
+                        newUser = new Admin(0, username, password, email, phone, address);
+                case "trainer" ->
+                        newUser = new Trainer(0, username, password, email, phone, address);
+                case "member" ->
+                        newUser = new Member(0, username, password, email, phone, address);
+                default ->
+                        messageLabel.setText("Invalid role selected.");
+            }
+
+            if (newUser != null) {
+                try {
+                    userService.register(newUser);
+                    messageLabel.setText("User registered successfully!");
+                } catch (Exception e) {
+                    messageLabel.setText("Registration failed: " + e.getMessage());
+                }
+            }
+        });
+
+        backButton.setOnAction(e -> start(primaryStage));
+
+        VBox layout = new VBox(10, titleLabel, usernameField, passwordField, emailField, phoneField, addressField, roleBox, registerButton, backButton, messageLabel);
+        layout.setAlignment(Pos.CENTER);
+        layout.setPadding(new Insets(20));
+
+        primaryStage.setScene(new Scene(layout, 450, 500));
     }
 
 }
