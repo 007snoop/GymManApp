@@ -14,9 +14,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class GUI extends Application {
     private UserService userService;
@@ -54,11 +54,11 @@ public class GUI extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        Label label = new Label("Hello Colin");
+        Label welcomeLabel = new Label("Hello Colin");
         Button loginButton = new Button("Login");
         Button registerButton = new Button("Register");
 
-        VBox layout = new VBox(20, label, loginButton, registerButton);
+        VBox layout = new VBox(20, welcomeLabel, loginButton, registerButton);
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
 
@@ -67,8 +67,8 @@ public class GUI extends Application {
         primaryStage.setScene(mainScene);
         primaryStage.show();
 
-        loginButton.setOnAction(e -> showLoginScreen(primaryStage));
-        registerButton.setOnAction(e -> showRegisterScreen());
+        loginButton.setOnAction(event -> showLoginScreen(primaryStage));
+        registerButton.setOnAction(event -> showRegisterScreen());
     }
 
 
@@ -105,7 +105,7 @@ public class GUI extends Application {
 
         primaryStage.setScene(loginScene);
 
-        loginButton.setOnAction(e -> {
+        loginButton.setOnAction(event -> {
             String username = usernameField.getText();
             String password = passwordField.getText();
 
@@ -134,7 +134,7 @@ public class GUI extends Application {
             }
         });
 
-        backButton.setOnAction(e -> start(primaryStage));
+        backButton.setOnAction(event -> start(primaryStage));
 
     }
 
@@ -145,12 +145,60 @@ public class GUI extends Application {
      * @param user uses role based user selection for "admin"
      */
     private void showAdminDash(Stage stage, User user) {
-        Label label = new Label("Welcome, Admin " + user.getUsername());
+        Label welcomeLabel = new Label("Welcome, Admin " + user.getUsername());
+
+        Button viewUsersButton = new Button("View All Users");
+        Button viewClassesButton = new Button("View All Classes");
+        Button deleteUserButton = new Button("Delete a User");
         Button logoutButton = new Button("Logout");
+    
+        viewUsersButton.setOnAction(event -> {
+            // TODO: Fetch and display user list
+            try {
+                List<User> users = userService.getAllUsers();
 
-        logoutButton.setOnAction(e -> start(stage));
+                VBox userListLayout = new VBox(10);
+                userListLayout.setPadding(new Insets(10));
+                userListLayout.setAlignment(Pos.TOP_LEFT);
 
-        VBox layout = new VBox(10, label, logoutButton);
+                Label titleLabel = new Label("All Registered Users");
+                // css styling
+                titleLabel.setStyle("""
+                        -fx-font-weight: bold;
+                        -fx-font-size: 16px;""");
+
+                userListLayout.getChildren().add(titleLabel);
+
+                for (User u : users) {
+                    Label userLabel = new Label("ID: " + u.getUserId() + " | Username: " + u.getUsername() + " | " +
+                            "Role: " + u.getRole());
+                    userListLayout.getChildren().add(userLabel);
+                }
+
+                Button backButton = new Button("back");
+                backButton.setOnAction(event1 -> showAdminDash(stage, user));
+                userListLayout.getChildren().add(backButton);
+
+
+                Scene userScene = new Scene(userListLayout, 400, 300);
+                stage.setScene(userScene);
+
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+        
+        viewClassesButton.setOnAction(event -> {
+            // TODO: Fetch and display class list
+        });
+
+        deleteUserButton.setOnAction(event -> {
+            // TODO: Prompt to enter username for deletion
+        });
+        logoutButton.setOnAction(event -> start(stage));
+
+        VBox layout = new VBox(10, welcomeLabel, viewUsersButton, viewClassesButton, deleteUserButton, logoutButton);
 
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
@@ -165,12 +213,29 @@ public class GUI extends Application {
      * @param user uses role based user selection for "trainer"
      */
     private void showTrainerDash(Stage stage, User user) {
-        Label label = new Label("Welcome, Trainer " + user.getUsername());
+        Label welocomeLabel = new Label("Welcome, Trainer " + user.getUsername());
+
+        Button viewYourClasses = new Button("View your Classes");
+        Button createWorkoutClass = new Button("Create a Workout Class");
+        Button deleteWorkoutClass = new Button("Delete a Workout Class");
+
         Button logoutButton = new Button("Logout");
 
-        logoutButton.setOnAction(e -> start(stage));
+        viewYourClasses.setOnAction(event -> {
+            // TODO: Fetch and display trainer classes based on trainer_id
+        });
 
-        VBox layout = new VBox(10, label, logoutButton);
+        createWorkoutClass.setOnAction(event -> {
+            //TODO: Add workout class to database
+        });
+
+        deleteWorkoutClass.setOnAction(event -> {
+            //TODO: Remove a workout class from database
+        });
+
+        logoutButton.setOnAction(event -> start(stage));
+
+        VBox layout = new VBox(10, welocomeLabel, logoutButton);
 
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
@@ -185,12 +250,29 @@ public class GUI extends Application {
      * @param user uses role based user selection for "member"
      */
     private void showMemberDash(Stage stage, User user) {
-        Label label = new Label("Welcome, Member " + user.getUsername());
+        Label welcomeLabel = new Label("Welcome, Member " + user.getUsername());
+
+        Button viewAvailableClasses = new Button("View Available Workout Classes");
+        Button joinWorkoutClass = new Button("Join Available Workout Class");
+        Button viewEnrolledClasses = new Button("View Your Enrolled classes");
+
         Button logoutButton = new Button("Logout");
 
-        logoutButton.setOnAction(e -> start(stage));
+        viewAvailableClasses.setOnAction(event -> {
+            // TODO: Fetch and display all available Classes
+        });
 
-        VBox layout = new VBox(10, label, logoutButton);
+        joinWorkoutClass.setOnAction(event -> {
+            // TODO: Add method to attach user to workout class
+        });
+
+        viewEnrolledClasses.setOnAction(event -> {
+            // TODO: Fetch and display Enrolled classes based on member_id attached to workout class
+        });
+
+        logoutButton.setOnAction(event -> start(stage));
+
+        VBox layout = new VBox(10, welcomeLabel, logoutButton);
 
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));

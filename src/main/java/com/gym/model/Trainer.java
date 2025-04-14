@@ -6,6 +6,10 @@ public class Trainer extends User {
         super(userId, username, password, email, phoneNumber, address);
     }
 
+    public Trainer(int userId, String username, String password) {
+        super(userId, username, password);
+    }
+
     @Override
     public String getRole() {
         return "Trainer";

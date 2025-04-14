@@ -9,6 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.gym.util.DBUtil.connection;
 
 public class UserDAO {
     private final Connection connection;
@@ -71,5 +75,33 @@ public class UserDAO {
         return null;
 
 
+    }
+
+    public List<User> getAllUsers() throws SQLException {
+        List<User> users = new ArrayList<>();
+
+        String SQL = """
+                SELECT *
+                FROM users""";
+
+        try (PreparedStatement stmt = connection.prepareStatement(SQL);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                int id = rs.getInt("user_id");
+                String username = rs.getString("username");
+                String password = rs.getString("password");
+                String role = rs.getString("role");
+
+                User user;
+                switch (role.toLowerCase()) {
+                    case "admin" -> user = new Admin(id, username, password);
+                    case "trainer" -> user = new Trainer(id, username, password);
+                    case "member" -> user = new Member(id, username, password);
+                    default -> throw new SQLException("Unknown role: " + role);
+                }
+                users.add(user);
+            }
+        }
+        return users;
     }
 }

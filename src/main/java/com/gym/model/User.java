@@ -18,6 +18,14 @@ public abstract class User {
         this.address = address;
     }
 
+    public User(int userId, String username, String password) {
+        this.userId = userId;
+        this.username = username;
+        this.password = password;
+    }
+
+
+
     // getter and setter
 
     public int getUserId() {

@@ -6,6 +6,10 @@ public class Member extends User {
         super(userId, username, password, email, phoneNumber, address);
     }
 
+    public Member(int userId, String username, String password) {
+        super(userId, username, password);
+    }
+
     @Override
     public String getRole() {
         return "Member";

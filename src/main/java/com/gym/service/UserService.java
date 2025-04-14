@@ -1,11 +1,19 @@
 package com.gym.service;
 
 import com.gym.dao.UserDAO;
+import com.gym.model.Admin;
+import com.gym.model.Member;
+import com.gym.model.Trainer;
 import com.gym.model.User;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import static com.gym.util.DBUtil.connection;
 
 public class UserService {
     private final UserDAO userDAO;
@@ -34,5 +42,10 @@ public class UserService {
     public User getUserByUsername(String username) throws SQLException {
         return userDAO.getUserByUsername(username);
     }
+
+    public List<User> getAllUsers() throws SQLException {
+        return userDAO.getAllUsers();
+    }
+
 
 }
