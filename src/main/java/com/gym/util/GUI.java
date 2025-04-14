@@ -1,9 +1,6 @@
 package com.gym.util;
 
-import com.gym.model.Admin;
-import com.gym.model.Member;
-import com.gym.model.Trainer;
-import com.gym.model.User;
+import com.gym.model.*;
 import com.gym.service.MembershipService;
 import com.gym.service.UserService;
 import com.gym.service.WorkoutClassService;
@@ -23,8 +20,6 @@ public class GUI extends Application {
     private UserService userService;
     private MembershipService membershipService;
     private WorkoutClassService workoutClassService;
-
-
     /**
      * Overrides init method in javafx before start() runs for db connection
      */
@@ -33,18 +28,15 @@ public class GUI extends Application {
         try {
             Connection connection = DBUtil.getConnection(); // replace with your DB setup
             this.userService = new UserService(connection);
-
+            this.workoutClassService = new WorkoutClassService(connection);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1); // Stop app if DB init fails
         }
     }
-
-
     public static void main(String[] args) {
         launch(args);
     }
-
     /**
      * Entry point for app start
      *
@@ -71,8 +63,13 @@ public class GUI extends Application {
         loginButton.setOnAction(event -> showLoginScreen(primaryStage));
         registerButton.setOnAction(event -> showRegisterScreen(primaryStage));
     }
-
-
+    private void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
     /**
      * Starts login screen
      *
@@ -138,7 +135,6 @@ public class GUI extends Application {
         backButton.setOnAction(event -> start(primaryStage));
 
     }
-
     /**
      * Starts admin dashboard
      *
@@ -154,7 +150,7 @@ public class GUI extends Application {
         Button logoutButton = new Button("Logout");
     
         viewUsersButton.setOnAction(event -> {
-            // TODO: Fetch and display user list
+
             try {
                 List<User> users = userService.getAllUsers();
 
@@ -195,7 +191,7 @@ public class GUI extends Application {
         });
 
         deleteUserButton.setOnAction(event -> {
-            // TODO: Prompt to enter username for deletion
+
             TextInputDialog dialog = new TextInputDialog();
 
             dialog.setTitle("Delete User");
@@ -236,7 +232,6 @@ public class GUI extends Application {
 
         stage.setScene(new Scene(layout, 400, 300));
     }
-
     /**
      * starts trainer dashboard
      *
@@ -244,36 +239,89 @@ public class GUI extends Application {
      * @param user uses role based user selection for "trainer"
      */
     private void showTrainerDash(Stage stage, User user) {
-        Label welocomeLabel = new Label("Welcome, Trainer " + user.getUsername());
+        Label welcomeLabel = new Label("Welcome, Trainer " + user.getUsername());
 
         Button viewYourClasses = new Button("View your Classes");
         Button createWorkoutClass = new Button("Create a Workout Class");
         Button deleteWorkoutClass = new Button("Delete a Workout Class");
-
         Button logoutButton = new Button("Logout");
 
+
         viewYourClasses.setOnAction(event -> {
-            // TODO: Fetch and display trainer classes based on trainer_id
+            try {
+                List<WorkoutClass> classes = workoutClassService.getWorkoutClassesByTrainerId(user.getUserId());
+
+                if (classes.isEmpty()) {
+                    showAlert(Alert.AlertType.INFORMATION, "No Classes", "You have no classes assigned.");
+                    return;
+                }
+
+                StringBuilder classList = new StringBuilder("Your Classes:\n");
+                for (WorkoutClass wc : classes) {
+                    classList.append("ID: ").append(wc.getWorkoutClassId())
+                            .append(" | Type: ").append(wc.getWorkoutClassType())
+                            .append(" | Desc: ").append(wc.getWorkoutClassDesc())
+                            .append("\n");
+                }
+
+                showAlert(Alert.AlertType.INFORMATION, "Your Classes", classList.toString());
+
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Could not retrieve classes.\n" + e.getMessage());
+            }
         });
 
         createWorkoutClass.setOnAction(event -> {
             //TODO: Add workout class to database
+            TextInputDialog typeDialog = new TextInputDialog();
+
+            typeDialog.setTitle("Create Class");
+            typeDialog.setHeaderText("Enter class type:");
+            typeDialog.showAndWait().ifPresent(type -> {
+                TextInputDialog descDialog = new TextInputDialog();
+
+                descDialog.setTitle("Class Description");
+                descDialog.setHeaderText("Enter class description:");
+                descDialog.showAndWait().ifPresent(desc -> {
+
+                    try {
+                        WorkoutClass newClass = new WorkoutClass(0, type, desc, user.getUserId());
+                        workoutClassService.addWorkoutClass(newClass);
+                        showAlert(Alert.AlertType.INFORMATION, "Success", "Workout class created.");
+                    } catch (SQLException e) {
+                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to create class.\n" + e.getMessage());
+                    }
+                });
+            });
         });
 
         deleteWorkoutClass.setOnAction(event -> {
             //TODO: Remove a workout class from database
+            TextInputDialog deleteDialog = new TextInputDialog();
+            deleteDialog.setTitle("Delete Workout Class");
+            deleteDialog.setHeaderText("Enter the ID of the class to delete:");
+            deleteDialog.showAndWait().ifPresent(idStr -> {
+                try {
+                    int id = Integer.parseInt(idStr);
+                    workoutClassService.deleteWorkoutClass(id);
+                    showAlert(Alert.AlertType.INFORMATION, "Deleted", "Workout class deleted.");
+                } catch (NumberFormatException e) {
+                    showAlert(Alert.AlertType.ERROR, "Invalid Input", "Please enter a valid numeric ID.");
+                } catch (SQLException e) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete class.\n" + e.getMessage());
+                }
+            });
         });
 
         logoutButton.setOnAction(event -> start(stage));
 
-        VBox layout = new VBox(10, welocomeLabel, logoutButton);
+        VBox layout = new VBox(10, welcomeLabel, viewYourClasses, createWorkoutClass, deleteWorkoutClass, logoutButton);
 
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));
 
         stage.setScene(new Scene(layout, 400, 300));
     }
-
     /**
      * Starts member dashboard
      *
@@ -310,7 +358,11 @@ public class GUI extends Application {
 
         stage.setScene(new Scene(layout, 400, 300));
     }
-
+    /**
+     * Starts register screen
+     *
+     * @param primaryStage registration scene
+     */
     private void showRegisterScreen(Stage primaryStage) {
         Label titleLabel = new Label("Register New User");
 
@@ -381,5 +433,4 @@ public class GUI extends Application {
 
         primaryStage.setScene(new Scene(layout, 450, 500));
     }
-
 }

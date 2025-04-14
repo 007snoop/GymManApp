@@ -44,7 +44,6 @@ public class UserDAO {
             e.printStackTrace();
         }
     }
-
     // get user by username
     public User getUserByUsername(String username) throws SQLException {
         String SQL = """
@@ -104,9 +103,7 @@ public class UserDAO {
         }
         return users;
     }
-
     // delete user with admin
-
     public boolean deleteUser(String username) throws SQLException {
         String SQL = """
                 DELETE FROM
