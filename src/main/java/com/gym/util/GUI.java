@@ -1,6 +1,7 @@
 package com.gym.util;
 
 import com.gym.model.*;
+import com.gym.service.MemberWorkoutClassService;
 import com.gym.service.MembershipService;
 import com.gym.service.UserService;
 import com.gym.service.WorkoutClassService;
@@ -19,6 +20,7 @@ import java.util.List;
 public class GUI extends Application {
     private UserService userService;
     private MembershipService membershipService;
+    private MemberWorkoutClassService memberWorkoutClassService;
     private WorkoutClassService workoutClassService;
     /**
      * Overrides init method in javafx before start() runs for db connection
@@ -285,7 +287,7 @@ public class GUI extends Application {
                 descDialog.showAndWait().ifPresent(desc -> {
 
                     try {
-                        WorkoutClass newClass = new WorkoutClass(0, type, desc, user.getUserId());
+                        WorkoutClass newClass = new WorkoutClass(type, desc, user.getUserId());
                         workoutClassService.addWorkoutClass(newClass);
                         showAlert(Alert.AlertType.INFORMATION, "Success", "Workout class created.");
                     } catch (SQLException e) {
@@ -339,10 +341,68 @@ public class GUI extends Application {
 
         viewAvailableClasses.setOnAction(event -> {
             // TODO: Fetch and display all available Classes
+            try {
+                List<WorkoutClass> classes = workoutClassService.getAllWorkoutClasses();
+
+                VBox classListLayout = new VBox(10);
+                classListLayout.setPadding(new Insets(10));
+
+
+                for (WorkoutClass wc : classes) {
+                    String classInfo = String.format("ID: %d\nType: %s\nDescription: %s\nTrainer ID: %d",
+                            wc.getWorkoutClassId(), wc.getWorkoutClassType(), wc.getWorkoutClassDesc(), wc.getTrainerId());
+
+                    Label classInfoLabel = new Label(classInfo);
+
+                    classInfoLabel.setWrapText(true);
+                    classInfoLabel.setStyle("""
+                            -fx-border-color: black;
+                            -fx-padding: 10;""");
+                    classListLayout.getChildren().add(classInfoLabel);
+                }
+
+                Button backButton = new Button("Back");
+                backButton.setOnAction(event1 -> showMemberDash(stage, user));
+
+                ScrollPane scrollPane = new ScrollPane(classListLayout);
+                scrollPane.setFitToWidth(true);
+
+                VBox layout = new VBox(10, new Label("Available Workout Classes: "), scrollPane, backButton);
+                layout.setPadding(new Insets(10));
+                layout.setAlignment(Pos.CENTER);
+
+                Scene scene = new Scene(layout, 400, 300);
+                stage.setScene(scene);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Error: ", e.getMessage());
+            }
         });
 
         joinWorkoutClass.setOnAction(event -> {
             // TODO: Add method to attach user to workout class
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Join Workout Class");
+            dialog.setHeaderText("Join a Workout Class");
+            dialog.setContentText("Enter the ID of the workout class you want to join: ");
+
+            dialog.showAndWait().ifPresent(input -> {
+                try {
+                    int classId = Integer.parseInt(input.trim());
+                    memberWorkoutClassService.enroll(user.getUserId(), classId);
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Success");
+                    successAlert.setHeaderText(null);
+                    successAlert.setContentText("Successfully joined workout class ID: " + classId);
+                    successAlert.showAndWait();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+            });
+
         });
 
         viewEnrolledClasses.setOnAction(event -> {

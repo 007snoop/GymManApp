@@ -36,6 +36,13 @@ public class DBSetup {
                     workout_class_desc TEXT,
                     trainer_id INTEGER REFERENCES users(user_id)
                     )""");
+            // create member work out classes table if not exists
+            stmt.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS member_workout_classes (
+                    member_id INT REFERENCES users(user_id),
+                    workout_class_id INT REFERENCES workout_classes(workout_class_id),
+                    PRIMARY KEY (member_id, workout_class_id)
+                    )""");
 
             // print check table log
             System.out.println("DB tables created/checked successfully");

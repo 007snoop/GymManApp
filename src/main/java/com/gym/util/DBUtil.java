@@ -22,6 +22,7 @@ public class DBUtil {
 
             assert url != null;
             connection = DriverManager.getConnection(url, username, password);
+            DBSetup.initDB(connection);
         } catch (Exception e) {
             e.printStackTrace();
         }
