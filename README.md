@@ -1,91 +1,98 @@
-# 🏋️‍♂️ The Coding Crew Gym Management App
+# The Coding Crew Gym Management App
 
-A simple Java-based application for managing gym members, tracking workout classes, and providing basic administrative features. Built with Java and Maven.
+A Java-based application for managing gym users and workout classes. This project uses PostgreSQL for data persistence, JavaFX for the graphical user interface, and Maven for build management.
 
----
+## Features
 
-## 📦 Features
+- Role-based access control for Admin, Trainer, and Member accounts
+- Admin Dashboard:
+    - View all users
+    - Delete users
+- Trainer Dashboard:
+    - Create new workout classes
+    - View and delete workout classes they created
+- Member Dashboard:
+    - View all available workout classes
+    - Enroll in workout classes
+    - View enrolled classes
+- PostgreSQL database integration
+- JavaFX GUI interface
 
-- Add, update, and remove gym members
-- Track workout history and attendance
-- Generate reports for gym usage
-- Command-line based interface
-- Lightweight and easy to run
+## Prerequisites
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Java 17+
+- Java 17 or later
 - Maven
+- PostgreSQL server
 
----
+## Environment Configuration
 
-### 🔐 Environment Configuration
+Create a `.env` file in the root directory of the project with your PostgreSQL database details.
 
-This project requires an `.env` file in the root directory to configure the database connection.
+Example `.env` file:
 
-#### Example `.env` File
-
-```env
-# DATABASE CONFIG 
-DB_URL=jdbc:postgresql://<your-repo-name>:<port>/<database_name>
-DB_USER=youruser
+```
+DB_URL=jdbc:postgresql://localhost:5432/<gymmanapp>
+DB_USER=yourusername 
 DB_PASSWORD=yourpassword
 ```
 
----
+If using IntelliJ IDEA, you can add these values under **Run > Edit Configurations > Environment variables**.
 
-### 🔧 Installation & Running
+## Installation and Running
 
-#### Clone the Repository
-
-```bash
+Clone the repository:
+```
 git clone https://github.com/007snoop/GymManApp.git
 cd GymManApp
 ```
 
-#### Add Your .env
-```env
-# DATABASE CONFIG 
-DB_URL=jdbc:postgresql://<your-repo-name>:<port>/<database_name>
-DB_USER=youruser
-DB_PASSWORD=yourpassword
-```
+Make sure your PostgreSQL database is running and configured properly.
 
-#### On Windows
-```bash
+Run the application:
+
+### On Windows
+
+```
 run.bat
 ```
 
-#### On Linux/Mac
-```bash
+### On Linux/MacOS
+
+```
 chmod +x run.sh
 ./run.sh
 ```
 
-#### Or via Maven
+### Or via maven
 
-```bash
-mvn clean compile exec:java
+```
+mvn clean compile javafx:run
 ```
 
----
 
-## ⚙️ Technologies
+## Test Accounts
+
+The following accounts can be used to test the system:
+
+| Role    | Username  | Password     |
+|---------|-----------|--------------|
+| Admin   | admin1    | adminpass    |
+| Trainer | trainer1  | trainerpass  |
+| Member  | member1   | memberpass   |
+
+Additional test users may exist depending on your current database seed data.
+
+## Technologies Used
 
 - Java 17
+- JavaFX
 - Maven
 - PostgreSQL
-- dotenv (for environment variables)
-- IntelliJ IDEA (recommended)
+- dotenv-java (or manual environment variable loader)
 
----
+## Authors
 
-## ✍️ Author
+- [007snoop](https://github.com/007snoop)
+- [CodyC1998](https://github.com/CodyC1998)
+- [JaowadH](https://github.com/JaowadH)
 
-- GitHub: [007snoop](https://github.com/007snoop)
-- Github: [CodyC1998](https://github.com/CodyC1998)
-- Github: [JaowadH](https://github.com/JaowadH)
