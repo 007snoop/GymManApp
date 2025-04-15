@@ -56,4 +56,36 @@ public class MemberWorkoutClassDAO {
         return classes;
     }
 
+    public List<WorkoutClass> getEnrolledClassesByMemberId(int memberId) throws SQLException {
+        List<WorkoutClass> classes = new ArrayList<>();
+
+        String SQL = """
+                SELECT wc.*
+                FROM workout_classes wc
+                JOIN member_workout_classes mwc
+                ON wc.workout_class_id = mwc.workout_class_id
+                WHERE mwc.member_id = ?
+                """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(SQL)) {
+            stmt.setInt(1, memberId);
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                WorkoutClass wc = new WorkoutClass(
+                        rs.getInt("workout_class_id"),
+                        rs.getString("workout_class_type"),
+                        rs.getString("workout_class_desc"),
+                        rs.getInt("trainer_id")
+                );
+                classes.add(wc);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return classes;
+    }
+
 }

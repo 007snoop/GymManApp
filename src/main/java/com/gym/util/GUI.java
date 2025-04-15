@@ -10,12 +10,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class GUI extends Application {
     private UserService userService;
@@ -31,6 +33,7 @@ public class GUI extends Application {
             Connection connection = DBUtil.getConnection(); // replace with your DB setup
             this.userService = new UserService(connection);
             this.workoutClassService = new WorkoutClassService(connection);
+            this.memberWorkoutClassService = new MemberWorkoutClassService(connection);
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1); // Stop app if DB init fails
@@ -190,6 +193,79 @@ public class GUI extends Application {
         
         viewClassesButton.setOnAction(event -> {
             // TODO: Fetch and display class list
+            try {
+                List<WorkoutClass> classList = workoutClassService.getAllWorkoutClasses();
+
+                VBox classContainer = new VBox(10);
+                classContainer.setPadding(new Insets(10));
+
+                if (classList.isEmpty()) {
+                    Label emptyLabel = new Label("No workout classes found.");
+                    classContainer.getChildren().add(emptyLabel);
+                } else {
+                    for (WorkoutClass wc : classList) {
+                        VBox card = new VBox(5);
+                        card.setPadding(new Insets(10));
+
+                        card.setStyle("""
+                                -fx-background-color: #e0f7fa;
+                                -fx-border-color: #00838f;
+                                -fx-border-radius: 5;
+                                -fx-background-radius: 5;
+                                """);
+
+                        Label idLabel = new Label("ClassID: " + wc.getWorkoutClassId());
+                        Label typeLabel = new Label("Type: " + wc.getWorkoutClassType());
+                        Label descLabel = new Label("Description: " + wc.getWorkoutClassDesc());
+                        Label trainerLabel = new Label("Trainer ID: " + wc.getTrainerId());
+
+                        HBox buttonRow = new HBox(10);
+                        Button deleteButton = new Button("Delete");
+
+                        // TODO: add edit button
+
+                        deleteButton.setOnAction(event1 -> {
+                            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+                            confirm.setTitle("Confirm Deletion");
+                            confirm.setHeaderText(null);
+                            confirm.setContentText("Are you sure you want to delete class ID: " + wc.getWorkoutClassId() + "?");
+
+                            Optional<ButtonType> result = confirm.showAndWait();
+
+                            if (result.isPresent() && result.get() == ButtonType.YES) {
+                                try {
+                                    workoutClassService.deleteWorkoutClass(wc.getWorkoutClassId());
+                                    showAlert(Alert.AlertType.INFORMATION, "Deleted", "Class successfully deleted.");
+                                    classContainer.getChildren().remove(card);
+                                } catch (SQLException ex) {
+                                    ex.printStackTrace();
+                                    showAlert(Alert.AlertType.ERROR, "ERROR", "Could not delete class.");
+                                }
+                            }
+                        });
+                        buttonRow.getChildren().addAll(deleteButton);
+                        card.getChildren().addAll(idLabel, typeLabel, descLabel, trainerLabel, buttonRow);
+                        classContainer.getChildren().add(card);
+                    }
+                }
+                ScrollPane scrollPane = new ScrollPane(classContainer);
+                scrollPane.setFitToWidth(true);
+
+                Button backButton = new Button("Back");
+                VBox layout = new VBox(10, scrollPane,backButton);
+                layout.setPadding(new Insets(10));
+                layout.setAlignment(Pos.CENTER);
+
+                Stage viewStage = new Stage();
+                viewStage.setTitle("All Workout Classes");
+                viewStage.setScene(new Scene(layout, 400, 300));
+                backButton.setOnAction(event1 -> viewStage.close());
+                viewStage.show();
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "ERROR", "Issue loading workout classes.");
+            }
         });
 
         deleteUserButton.setOnAction(event -> {
@@ -407,11 +483,64 @@ public class GUI extends Application {
 
         viewEnrolledClasses.setOnAction(event -> {
             // TODO: Fetch and display Enrolled classes based on member_id attached to workout class
+           try {
+               List<WorkoutClass> enrolledClasses = memberWorkoutClassService.getEnrolledClassesByMemberId(user.getUserId());
+
+               VBox classContainer = new VBox(10);
+               classContainer.setPadding(new Insets(10));
+
+               if (enrolledClasses.isEmpty()) {
+                   Label noClassLabel = new Label("You are not currently enrolled in any classes.");
+                   classContainer.getChildren().add(noClassLabel);
+               } else {
+                   for (WorkoutClass wc : enrolledClasses) {
+                       VBox card = new VBox(10);
+
+                       card.setPadding(new Insets(10));
+                       card.setStyle("""
+                               -fx-background-color: #f4f4f4;
+                               -fx-border-color: #cccccc;
+                               -fx-border-radius: 5;
+                               -fx-background-radius: 5;
+                               """);
+
+                       Label typeLabel = new Label("Type: " + wc.getWorkoutClassType());
+                       Label descLabel = new Label("Description: " + wc.getWorkoutClassDesc());
+                       Label trainerLabel = new Label("Trainer ID: " + wc.getTrainerId());
+
+                       card.getChildren().addAll(typeLabel, descLabel, trainerLabel);
+                       classContainer.getChildren().add(card);
+                   }
+               }
+
+               ScrollPane scrollPane = new ScrollPane(classContainer);
+               scrollPane.setFitToWidth(true);
+               scrollPane.setFitToHeight(true);
+
+               Button backButton = new Button("Back");
+               VBox layout = new VBox(10, scrollPane, backButton);
+               layout.setPadding(new Insets(10));
+               layout.setAlignment(Pos.CENTER);
+
+
+               Stage enrolledStage = new Stage();
+               enrolledStage.setTitle("Your Enrolled Classes");
+               enrolledStage.setScene(new Scene(layout, 300, 200));
+               enrolledStage.show();
+
+               backButton.setOnAction(event1 -> enrolledStage.close());
+
+
+           } catch (SQLException e) {
+               e.printStackTrace();
+               showAlert(Alert.AlertType.ERROR, "Error", "Could not retrieve your enrolled classes.");
+           }
         });
 
         logoutButton.setOnAction(event -> start(stage));
 
-        VBox layout = new VBox(10, welcomeLabel, logoutButton);
+        VBox layout = new VBox(10, welcomeLabel, viewAvailableClasses, joinWorkoutClass, viewEnrolledClasses,
+                logoutButton);
 
         layout.setAlignment(Pos.CENTER);
         layout.setPadding(new Insets(20));

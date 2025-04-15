@@ -21,4 +21,8 @@ public class MemberWorkoutClassService {
     public List<WorkoutClass> getEnrolledClasses(int memberId) throws SQLException{
         return memberWorkoutClassDAO.getEnrolledClasses(memberId);
     }
+
+    public List<WorkoutClass> getEnrolledClassesByMemberId(int memberId) throws SQLException {
+        return memberWorkoutClassDAO.getEnrolledClassesByMemberId(memberId);
+    }
 }
