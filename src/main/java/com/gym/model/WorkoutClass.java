@@ -13,6 +13,13 @@ public class WorkoutClass {
         this.trainerId = trainerId;
     }
 
+    // Constructor without ID (used for INSERT)
+    public WorkoutClass(String type, String desc, int trainerId) {
+        this.workoutClassType = type;
+        this.workoutClassDesc = desc;
+        this.trainerId = trainerId;
+    }
+
     public int getWorkoutClassId() {
         return workoutClassId;
     }

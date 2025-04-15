@@ -8,6 +8,14 @@ public class DBSetup {
 
     public static void initDB(Connection connection) {
         try (Statement stmt = connection.createStatement()) {
+            // drop tables to setup new schema
+        /*    stmt.executeUpdate("""
+                    DROP TABLE IF EXISTS member_workout_classes
+                    """);
+            stmt.executeUpdate("""
+                      DROP TABLE IF EXISTS workout_classes
+                    """);
+*/
             // create user tables if not exists
             stmt.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS users (
@@ -35,6 +43,13 @@ public class DBSetup {
                     workout_class_type TEXT NOT NULL,
                     workout_class_desc TEXT,
                     trainer_id INTEGER REFERENCES users(user_id)
+                    )""");
+            // create member work out classes table if not exists
+            stmt.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS member_workout_classes (
+                    member_id INT REFERENCES users(user_id),
+                    workout_class_id INT REFERENCES workout_classes(workout_class_id) ON DELETE CASCADE,
+                    PRIMARY KEY (member_id, workout_class_id)
                     )""");
 
             // print check table log
