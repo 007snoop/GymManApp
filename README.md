@@ -52,11 +52,15 @@ Run the application:
 
 ### On Windows
 
+Windows is easy, just double click: 
+
 ```
 run.bat
 ```
 
 ### On Linux/MacOS
+
+Linux and Mac need permissions to execute the shell script, so run this in your console:
 
 ```
 chmod +x run.sh
@@ -64,6 +68,8 @@ chmod +x run.sh
 ```
 
 ### Or via maven
+
+Maven can handle the app but it needs to be parsed threw javafx first: 
 
 ```
 mvn clean compile javafx:run
