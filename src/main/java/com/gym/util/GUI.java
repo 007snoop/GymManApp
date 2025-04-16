@@ -13,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -220,29 +221,7 @@ public class GUI extends Application {
                         Label trainerLabel = new Label("Trainer ID: " + wc.getTrainerId());
 
                         HBox buttonRow = new HBox(10);
-                        Button deleteButton = new Button("Delete");
-
-                        // TODO: add edit button
-
-                        deleteButton.setOnAction(event1 -> {
-                            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-                            confirm.setTitle("Confirm Deletion");
-                            confirm.setHeaderText(null);
-                            confirm.setContentText("Are you sure you want to delete class ID: " + wc.getWorkoutClassId() + "?");
-
-                            Optional<ButtonType> result = confirm.showAndWait();
-
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                try {
-                                    workoutClassService.deleteWorkoutClass(wc.getWorkoutClassId());
-                                    showAlert(Alert.AlertType.INFORMATION, "Deleted", "Class successfully deleted.");
-                                    classContainer.getChildren().remove(card);
-                                } catch (SQLException ex) {
-                                    ex.printStackTrace();
-                                    showAlert(Alert.AlertType.ERROR, "ERROR", "Could not delete class.");
-                                }
-                            }
-                        });
+                        Button deleteButton = getDeleteButton(wc, classContainer, card);
                         buttonRow.getChildren().addAll(deleteButton);
                         card.getChildren().addAll(idLabel, typeLabel, descLabel, trainerLabel, buttonRow);
                         classContainer.getChildren().add(card);
@@ -310,6 +289,35 @@ public class GUI extends Application {
 
         stage.setScene(new Scene(layout, 400, 300));
     }
+
+    @NotNull
+    private Button getDeleteButton(WorkoutClass wc, VBox classContainer, VBox card) {
+        Button deleteButton = new Button("Delete");
+
+        // TODO: add edit button
+
+        deleteButton.setOnAction(event1 -> {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Confirm Deletion");
+            confirm.setHeaderText(null);
+            confirm.setContentText("Are you sure you want to delete class ID: " + wc.getWorkoutClassId() + "?");
+
+            Optional<ButtonType> result = confirm.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                try {
+                    workoutClassService.deleteWorkoutClass(wc.getWorkoutClassId());
+                    showAlert(Alert.AlertType.INFORMATION, "Deleted", "Class successfully deleted.");
+                    classContainer.getChildren().remove(card);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    showAlert(Alert.AlertType.ERROR, "ERROR", "Could not delete class.");
+                }
+            }
+        });
+        return deleteButton;
+    }
+
     /**
      * starts trainer dashboard
      *
@@ -472,9 +480,7 @@ public class GUI extends Application {
                     successAlert.setHeaderText(null);
                     successAlert.setContentText("Successfully joined workout class ID: " + classId);
                     successAlert.showAndWait();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                } catch (NumberFormatException e) {
+                } catch (SQLException | NumberFormatException e) {
                     e.printStackTrace();
                 }
             });
@@ -592,25 +598,33 @@ public class GUI extends Application {
                 return;
             }
 
-            User newUser = null;
-            switch (role.toLowerCase()) {
+            User newUser = switch (role.toLowerCase()) {
                 case "admin" ->
-                        newUser = new Admin(0, username, password, email, phone, address);
+                        new Admin(0, username, password, email, phone, address);
                 case "trainer" ->
-                        newUser = new Trainer(0, username, password, email, phone, address);
+                        new Trainer(0, username, password, email, phone, address);
                 case "member" ->
-                        newUser = new Member(0, username, password, email, phone, address);
-                default ->
-                        messageLabel.setText("Invalid role selected.");
+                        new Member(0, username, password, email, phone, address);
+                default -> null;
+            };
+
+            if (newUser == null) {
+                showAlert(Alert.AlertType.ERROR, "Invalid Role", "Please select a valid user role.");
+                return;
             }
 
-            if (newUser != null) {
-                try {
-                    userService.register(newUser);
-                    messageLabel.setText("User registered successfully!");
-                } catch (Exception e) {
-                    messageLabel.setText("Registration failed: " + e.getMessage());
-                }
+
+            try {
+                userService.register(newUser);
+                showAlert(Alert.AlertType.INFORMATION, "Success", "User registered successfully!");
+            } catch (DupUserEx e) {
+                showAlert(Alert.AlertType.WARNING, "Registration Error", e.getMessage());
+            } catch (SQLException e) {
+                showAlert(Alert.AlertType.ERROR, "Database Error", "Something went wrong with the database.");
+                e.printStackTrace();
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Unexpected Error", e.getMessage());
+                e.printStackTrace();
             }
         });
 

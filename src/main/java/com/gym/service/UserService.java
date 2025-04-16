@@ -5,6 +5,7 @@ import com.gym.model.Admin;
 import com.gym.model.Member;
 import com.gym.model.Trainer;
 import com.gym.model.User;
+import com.gym.util.DupUserEx;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.Connection;
@@ -22,10 +23,18 @@ public class UserService {
         this.userDAO = new UserDAO(connection);
     }
     // make user with hashed pass
-    public void register(User user) throws SQLException {
+    public void register(User user) throws SQLException, DupUserEx {
         String hashedPass = hashPassword(user.getPassword());
         user.setPassword(hashedPass);
-        userDAO.registerUser(user);
+        try {
+            userDAO.registerUser(user);
+        } catch (SQLException e) {
+            String msg = e.getMessage().toLowerCase();
+            if (msg.contains("unique") || msg.contains("duplicate") || msg.contains("already exists")) {
+                throw new DupUserEx("That username or email is already registered.");
+            }
+            throw e;
+        }
     }
 
     // hash the pass

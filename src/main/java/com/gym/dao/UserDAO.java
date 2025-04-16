@@ -42,6 +42,7 @@ public class UserDAO {
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
+            throw e;
         }
     }
     // get user by username
