@@ -52,7 +52,7 @@ public class GUI extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-        Label welcomeLabel = new Label("Hello Colin");
+        Label welcomeLabel = new Label("Welcome to the Gym Management System");
         Button loginButton = new Button("Login");
         Button registerButton = new Button("Register");
 
@@ -232,7 +232,7 @@ public class GUI extends Application {
 
                             Optional<ButtonType> result = confirm.showAndWait();
 
-                            if (result.isPresent() && result.get() == ButtonType.YES) {
+                            if (result.isPresent() && result.get() == ButtonType.OK) {
                                 try {
                                     workoutClassService.deleteWorkoutClass(wc.getWorkoutClassId());
                                     showAlert(Alert.AlertType.INFORMATION, "Deleted", "Class successfully deleted.");
