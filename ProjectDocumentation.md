@@ -119,6 +119,9 @@ CREATE TABLE IF NOT EXISTS member_workout_classes (
                     PRIMARY KEY (member_id, workout_class_id)
                     );
 ```
+
+## Presentation Video Link 
+**https://youtu.be/y2x0sbZr1zw**
 ***
 
 ## Batch File Documentation
