@@ -1,5 +1,5 @@
 package com.gym.util;
-
+/*gymmanapp?sslmode=verify-full added to env*/
 
 import io.github.cdimascio.dotenv.Dotenv;
 import java.sql.Connection;
